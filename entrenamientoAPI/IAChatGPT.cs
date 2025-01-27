@@ -41,7 +41,7 @@ namespace entrenamientoAPI
                 catch (HttpRequestException ex)
                 {
                     // Maneja errores en la solicitud
-                    resul = new RespuestaDeApi { respuesta = "No entendi tu respuesta", categoria = "ErrorAPI" };
+                    resul = new RespuestaDeApi { respuesta = "No entendi tu respuesta", categoria = "ErrorAPI", subcategoria = "" };
                 }
             }
             return resul;
@@ -68,7 +68,7 @@ namespace entrenamientoAPI
             catch(Exception ex)
             {
                 ////@TODOS queda pendiente VALIDAR QUE HACER EN CASO DE EXCEPCION
-                resul = new RespuestaDeApi { respuesta = "No entendi tu respuesta", categoria = "ErrorMensaje" };
+                resul = new RespuestaDeApi { respuesta = "No entendi tu respuesta", categoria = "ErrorMensaje", subcategoria = "" };
             }
             return resul;
         }
