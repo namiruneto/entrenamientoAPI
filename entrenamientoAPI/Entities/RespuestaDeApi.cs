@@ -7,6 +7,8 @@
     public class RespuestaDeApi
     {
         public string categoria { get; set; }
+        public string subcategoria { get; set; }
         public string respuesta { get; set; }
+        public string estado { get; set; }
     }
 }
