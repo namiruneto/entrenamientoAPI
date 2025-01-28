@@ -11,12 +11,18 @@ namespace entrenamientoAPI
         private HistorialChat _historialChat { get; set; }
 
         /// <summary>
+        /// Almacenar la cantidad de token por el ultimo promt enviado para validar y saber realmente la cantidad y reducir costos si es necesario hacer un resumen
+        /// </summary>
+        private int TotalTokenAnterior { get; set; }
+
+        /// <summary>
         /// Validacion por si esta con un asesor real o esta con el IA
         /// </summary>
         private bool AsesorReal { get; set; }
 
         private IAChatGPT IA {  get; set; }
-        
+        private TokenValidator tokenValidator { get; set; }
+
         //construtor o iniciador de la clase
         public Chat()
         {
@@ -32,13 +38,23 @@ namespace entrenamientoAPI
             ////TODO: Andres - validar con chatgpt el carge de informacion para reducir costos en el promt como el que se esta enviando el modelo que deseo que me responda
             
             //Creamos el primer promt que va ser del sistema para iniciar la conversacion
-            _historialChat.listaDeMensajes.Add
-                (
-                    new Message
-                    {
-                        role = "system",
-                        content = "Eres un asistente virtual de una cooperativa financiera. " +
-                        "Si no tienes suficiente información para responder una consulta, " +
+            _historialChat.listaDeMensajes.Add(MensajeIncialDeSystem());
+            //realizamos el inico de la conexion y parametros para la inteligencia artificial
+            //ya se va organizar que empresa o entidad se va utilizar 
+            IA = new IAChatGPT();  
+            tokenValidator = new TokenValidator();
+            //iniciamos el total de tokens en 0 para posteiror validacion
+            TotalTokenAnterior = 0;
+        }
+
+
+        private Message MensajeIncialDeSystem()
+        {
+            return new Message
+            {
+                role = "system",
+                content = "Eres un asistente virtual de una cooperativa financiera llamada Namiruneto, " +
+                        "nos encargamos de realizar prestamos, cuentas de ahorro y cdts entre otros," +
                         "responde exclusivamente en formato JSON con el estado \"escalar\". " +
                         "Si necesitas más datos, indica \"incompleto\". " +
                         "Usa la estructura:" +
@@ -46,12 +62,8 @@ namespace entrenamientoAPI
                         " \"subcategoria\": \"...\",\n " +
                         " \"respuesta\": \"...\",\n " +
                         " \"estado\": \"...\" // \"completado\", \"incompleto\" o \"escalar\"\n}",
-                        
-                    }
-                );
-            //realizamos el inico de la conexion y parametros para la inteligencia artificial
-            //ya se va organizar que empresa o entidad se va utilizar 
-            IA = new IAChatGPT();            
+
+            };
         }
 
         /// <summary>
@@ -61,21 +73,9 @@ namespace entrenamientoAPI
         /// <returns></returns>       
         public string MensajeNuevo(string MensajeRecibido)
         {
-            // Validar tokens antes de enviar al modelo
-            var (esValido, tokensUsados) = TokenValidator.ValidarTokens(_historialChat.listaDeMensajes);
-
-            if (!esValido)
-            {
-                _historialChat.listaDeMensajes = TokenValidator.ResumirHistorial(_historialChat.listaDeMensajes);
-                Console.WriteLine($"Historial resumido debido al exceso de tokens. Tokens usados: {tokensUsados}");
-            }
-
-            ////TODO: Andres - validar después de cierta cantidad de palabras al llenar el historial de mensajes
-            ///generar un prom para un resumen de toda la información y procesar para que sea mas liviano el promt y reducir token
-            ///
             RespuestaDeApi SolucionProblema = new RespuestaDeApi();
             //si esta activo el asesor se emite el mensaje directamente para que se encarge de seguir con el chat
-            if ( AsesorReal)
+            if (AsesorReal)
             {
                 SolucionProblema = Asesor(MensajeRecibido);
                 _historialChat.respuestaPreguntas.Add(
@@ -86,6 +86,27 @@ namespace entrenamientoAPI
                     });
                 return SolucionProblema.respuesta;
             }
+
+            //validar la cantidad de token para procesar el siguiente paso que es generar el resumen si no es apropiado
+            if (!tokenValidator.ValidarTokens(MensajeRecibido, TotalTokenAnterior))
+            {
+                List<Message> men = new List<Message>();
+                men.AddRange(_historialChat.listaDeMensajes.Where(x => x.role != "system"));
+                men.Add(new Message
+                {
+                    role = "system",
+                    content = "Realiza un resumen de toda la conversación que va desde las preguntas y respuestas del asistente en pocas lineas para reducir el tamaño del promt y tokens pero sin perder la historia y sea utilizada para una nueva conversacion"
+                });
+                string resumen = IA.ConsumirApiSencilla(men).GetAwaiter().GetResult();
+
+                _historialChat.listaDeMensajes = new List<Message>();
+                _historialChat.listaDeMensajes.Add(MensajeIncialDeSystem());
+                _historialChat.listaDeMensajes.Add(new Message
+                {
+                    role = "system",
+                    content = $"El usuario desea continuar con la conversación anterior. Aquí tienes un resumen de lo que se habló:\n\n{resumen}\n\nPor favor, responde a la nueva petición del usuario."
+                }); 
+            }        
             
             //Luego de recibir se agrega a las respuestas o historial que se tiene en el momento
             _historialChat.listaDeMensajes.Add(
@@ -96,7 +117,21 @@ namespace entrenamientoAPI
                 });
 
             //luego de tener el mensaje nuevo agregado en el historial realizamos la peticion
-            SolucionProblema = IA.ConsumirApiAsync(_historialChat.listaDeMensajes).GetAwaiter().GetResult();  
+            
+            var (RespuestaApi, TokenUtilizados) = IA.ConsumirApiAsync(_historialChat.listaDeMensajes).GetAwaiter().GetResult();
+            SolucionProblema = RespuestaApi;
+            TotalTokenAnterior = TokenUtilizados;
+            //se realiza el guardado de la informacion en la lista para posteiormente procesar y guardar la informacion 
+            _historialChat.respuestaPreguntas.Add(new RespuestaPreguntas
+            {
+                Pregunta = MensajeRecibido,
+                Respuesta = SolucionProblema,
+            });  
+            _historialChat.listaDeMensajes.Add(new Message
+            {
+                role = "assistant",
+                content = SolucionProblema.respuesta,
+            });
             ////TODO: Andres - luego de recibir la respuesta validar el estado para saber que proceso seguir si pasar a un asesor o realizar otra logica por categoria
             
             ////TODO: Andres - queda pendiente agregar cuando se requiere hacer el tema de validacion de autentificacion
