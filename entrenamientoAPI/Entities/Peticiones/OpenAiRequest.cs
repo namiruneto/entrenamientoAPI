@@ -11,26 +11,26 @@ namespace entrenamientoAPI.Entities.Peticiones
         /// <summary>
         /// Modelo a usar (por ejemplo, "gpt-4")
         /// </summary>
-        public string Model { get; set; }
+        public string model { get; set; }
 
         /// <summary>
         /// Lista de mensajes que define la conversación
         /// </summary>
-        public List<Message> Messages { get; set; }
+        public List<Message> messages { get; set; }
 
-        /// <summary>
-        /// Opcional: Controla la aleatoriedad en las respuestas
-        /// </summary>
-        public double Temperature { get; set; } = 1.0;
+        ///// <summary>
+        ///// Opcional: Controla la aleatoriedad en las respuestas
+        ///// </summary>
+        //public double temperature { get; set; } = 1.0;
 
-        /// <summary>
-        /// Opcional: Máximo de tokens para la respuesta
-        /// </summary>
-        public int MaxTokens { get; set; } = 200;
+        ///// <summary>
+        ///// Opcional: Máximo de tokens para la respuesta
+        ///// </summary>
+        //public int maxTokens { get; set; } = 200;
 
-        /// <summary>
-        /// Opcional: Controla la diversidad de las respuestas
-        /// </summary>
-        public double TopP { get; set; } = 1.0;
+        ///// <summary>
+        ///// Opcional: Controla la diversidad de las respuestas
+        ///// </summary>
+        //public double topP { get; set; } = 1.0;
     }
 }
