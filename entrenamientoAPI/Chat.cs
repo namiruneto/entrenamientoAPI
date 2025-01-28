@@ -60,7 +60,16 @@ namespace entrenamientoAPI
         /// <param name="MensajeRecibido"></param>
         /// <returns></returns>       
         public string MensajeNuevo(string MensajeRecibido)
-        {   
+        {
+            // Validar tokens antes de enviar al modelo
+            var (esValido, tokensUsados) = TokenValidator.ValidarTokens(_historialChat.listaDeMensajes);
+
+            if (!esValido)
+            {
+                _historialChat.listaDeMensajes = TokenValidator.ResumirHistorial(_historialChat.listaDeMensajes);
+                Console.WriteLine($"Historial resumido debido al exceso de tokens. Tokens usados: {tokensUsados}");
+            }
+
             ////TODO: Andres - validar después de cierta cantidad de palabras al llenar el historial de mensajes
             ///generar un prom para un resumen de toda la información y procesar para que sea mas liviano el promt y reducir token
             ///
@@ -95,9 +104,6 @@ namespace entrenamientoAPI
             ////TODO: Andres - queda pendiente la validacion cuando es finalizacion de chat cuando el usuario escribe algo relacionado que se acabo
             ///esto es cuando son mensajes como "gracias por la informacion" , "quedo claro", "adios" etc algo relacionado cuando entra en la categoria Final o algo relacionado esta categoria queda pendiente por hacer
             
-            
-            
-            
                      
             //realizamos la validacion de codigo par saber el estado de la respuesta para saber que paso seguir 
             return SolucionProblema.respuesta.ToString();
@@ -114,6 +120,8 @@ namespace entrenamientoAPI
             return resul;
 
         }
+
+        
 
         /// <summary>
         /// Clase encargada de finalizar el chat guardar datos y procesar la informacion
