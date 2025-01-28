@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using entrenamientoAPI;
 using entrenamientoAPI.Entities;
 using Newtonsoft.Json;
 
@@ -19,15 +20,8 @@ public class Program
     }
     public async Task ejecucion()
     {
-        //cuando inicia una chat se guarda una llave que es el identificador 
+        Chat chat = new Chat();
 
-        //iniciamos el hsitorial de los mensajes y todo para validar los datos
-        HistorialMensajes.Add(
-            new listamensajes
-            {
-                role = "system",
-                content = "Eres un asistente. Somos una cooperativa financiera que realiza préstamos y manejamos tarjetas de débito y crédito a nuestros clientes. Responde exclusivamente en formato JSON con la estructura: { 'categoria': '...', 'respuesta': '...'}.",
-            });
 
         while (true) // Bucle infinito
         {
@@ -40,7 +34,7 @@ public class Program
                 Console.WriteLine("Terminando el programa...");
                 break;
             }
-            _ = consumirAPiAsync(input);
+            Console.WriteLine(chat.MensajeNuevo(input));
         }
     }
 
