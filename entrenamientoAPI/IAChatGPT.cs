@@ -51,8 +51,8 @@ namespace entrenamientoAPI
         {
             string resul = "";
             OpenAiRequest openAiRequest = new OpenAiRequest();
-            openAiRequest.Model = "gpt-4o-mini";
-            openAiRequest.Messages = mensajes;
+            openAiRequest.model = "gpt-4o-mini";
+            openAiRequest.messages = mensajes;
             resul = JsonConvert.SerializeObject(openAiRequest);
             return resul;
         }

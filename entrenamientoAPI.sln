@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entrenamientoAPI", "entrenamientoAPI\entrenamientoAPI.csproj", "{F2E797A6-2F52-494F-A7B7-3B587EB6E060}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entrenamientoAPI", "entrenamientoAPI\entrenamientoAPI.csproj", "{F2E797A6-2F52-494F-A7B7-3B587EB6E060}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{12D1A800-1CE9-4766-8AB0-17D67616211D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{12D1A800-1CE9-4766-8AB0-17D67616211D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entrenamientoAPITests", "entrenamientoAPITests\entrenamientoAPITests.csproj", "{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{12D1A800-1CE9-4766-8AB0-17D67616211D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12D1A800-1CE9-4766-8AB0-17D67616211D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{12D1A800-1CE9-4766-8AB0-17D67616211D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
