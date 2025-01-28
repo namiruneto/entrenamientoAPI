@@ -1,4 +1,6 @@
-﻿namespace entrenamientoAPI.Entities
+﻿using entrenamientoAPI.Entities.Respuestas;
+
+namespace entrenamientoAPI.Entities
 {
     /// <summary>
     /// Modelo de datos para deserializar el json de ChatGpt
