@@ -5,7 +5,7 @@ using Dapper;
 
 namespace entrenamientoAPI.Infrastructure.Abstracta
 {
-    public abstract class BaseRepository <Parametre, Resul>
+    public abstract class BaseRepository<Parametre, Resul>
     {
         public Parametre Parameters { get; set; }
         public Resul Result { get; set; }
@@ -21,7 +21,7 @@ namespace entrenamientoAPI.Infrastructure.Abstracta
                 .Build();
 
             _connectionString = configuration.GetConnectionString("PesajeInteligenteConnection") ??
-                                throw new InvalidOperationException("Connection string not found.");           
+                                throw new InvalidOperationException("Connection string not found.");
         }
 
         protected SqlConnection CreateConnection()
