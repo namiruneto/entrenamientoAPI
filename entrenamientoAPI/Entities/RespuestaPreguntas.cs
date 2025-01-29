@@ -4,5 +4,6 @@
     {
         public string Pregunta { get; set; }
         public RespuestaDeApi Respuesta { get; set; }
+        public bool Asesor { get; set; }
     }
 }
