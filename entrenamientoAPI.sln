@@ -7,7 +7,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entrenamientoAPI", "entrena
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{12D1A800-1CE9-4766-8AB0-17D67616211D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "entrenamientoAPITests", "entrenamientoAPITests\entrenamientoAPITests.csproj", "{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "entrenamientoAPITests", "entrenamientoAPITests\entrenamientoAPITests.csproj", "{83A08B35-F01C-49ED-BDE2-8E5250C71F8E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Procedimientos_Almacenados", "Procedimientos_Almacenados", "{B83FC0B8-70EB-4E60-8F7A-49CFD081948E}"
+	ProjectSection(SolutionItems) = preProject
+		PA_Insert_HistorialChat.sql = PA_Insert_HistorialChat.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tabla", "tabla", "{24730762-3FF5-42CC-8F81-7D680B992FCB}"
+	ProjectSection(SolutionItems) = preProject
+		HistorialChat.sql = HistorialChat.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +40,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{24730762-3FF5-42CC-8F81-7D680B992FCB} = {B83FC0B8-70EB-4E60-8F7A-49CFD081948E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B77B6A34-C31A-4DD8-AD53-675E71629347}
