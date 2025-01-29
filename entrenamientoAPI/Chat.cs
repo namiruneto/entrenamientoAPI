@@ -1,5 +1,11 @@
 ﻿using entrenamientoAPI.Entities;
-using static Program;
+using entrenamientoAPI.Entities.BaseDatos.JsonParametros;
+using entrenamientoAPI.Entities.BaseDatos.Pametros;
+using entrenamientoAPI.Entities.BaseDatos.Respuestas;
+using entrenamientoAPI.Infrastructure.Interfaz;
+using entrenamientoAPI.Infrastructure.Repositorio;
+using System.Data;
+using System.Text.Json;
 
 namespace entrenamientoAPI
 {
@@ -57,6 +63,7 @@ namespace entrenamientoAPI
                         "nos encargamos de realizar prestamos, cuentas de ahorro y cdts entre otros," +
                         "responde exclusivamente en formato JSON con el estado \"escalar\". " +
                         "Si necesitas más datos, indica \"incompleto\". " +
+                        "Si puedes reponder correcto, indica \"completado\". " +
                         "Usa la estructura:" +
                         "\n\n{\n  \"categoria\": \"...\",\n " +
                         " \"subcategoria\": \"...\",\n " +
@@ -76,15 +83,8 @@ namespace entrenamientoAPI
             RespuestaDeApi SolucionProblema = new RespuestaDeApi();
             //si esta activo el asesor se emite el mensaje directamente para que se encarge de seguir con el chat
             if (AsesorReal)
-            {
-                SolucionProblema = Asesor(MensajeRecibido);
-                _historialChat.respuestaPreguntas.Add(
-                    new RespuestaPreguntas
-                    {
-                        Pregunta = MensajeRecibido,
-                        Respuesta = SolucionProblema,
-                    });
-                return SolucionProblema.respuesta;
+            {  
+                return Asesor(MensajeRecibido);
             }
 
             //validar la cantidad de token para procesar el siguiente paso que es generar el resumen si no es apropiado
@@ -126,12 +126,20 @@ namespace entrenamientoAPI
             {
                 Pregunta = MensajeRecibido,
                 Respuesta = SolucionProblema,
+                Asesor = false,
             });  
             _historialChat.listaDeMensajes.Add(new Message
             {
                 role = "assistant",
                 content = SolucionProblema.respuesta,
             });
+
+            //se valida si el estado de la respuesta para proceder a realizar un tramite correspondiente con un asesor real
+            if(SolucionProblema.estado == "escalar")
+            {
+                return Asesor(MensajeRecibido);
+            }
+
             ////TODO: Andres - luego de recibir la respuesta validar el estado para saber que proceso seguir si pasar a un asesor o realizar otra logica por categoria
             
             ////TODO: Andres - queda pendiente agregar cuando se requiere hacer el tema de validacion de autentificacion
@@ -145,14 +153,24 @@ namespace entrenamientoAPI
 
         }
 
-        private RespuestaDeApi Asesor(string MensajeRecibido)
+        private string Asesor(string MensajeRecibido)
         {
             //se realiza la validacion para enviar al asesor real para continuar con el proceso que lleva con el cliente 
+            //ya con la respuesta que nos da la guardamos aca ya no manejamos guardar e historial de chat ya que es
+            //para solo tema de ia y esto es para guardar en base de datos
             RespuestaDeApi resul = new RespuestaDeApi();
+
+            _historialChat.respuestaPreguntas.Add(
+                   new RespuestaPreguntas
+                   {
+                       Pregunta = MensajeRecibido,
+                       Respuesta = resul,
+                       Asesor = true,
+                   });
 
             ////TODO: queda pendiente hacer la logica para enviar al asesor real la informacion para su respuesta
 
-            return resul;
+            return resul.respuesta;
 
         }
 
@@ -163,15 +181,29 @@ namespace entrenamientoAPI
         /// </summary>
         public void FinalizarChat()
         {
-            //se inicia la base de datos y se envia el modelo de datos para que este se encarger de guardarlo
-            ////TODO: Cesar - cuando se finaliza la tarea enviar los datos para guardar             
-            
-            
-        }
+            List<HistorialChatType> historialChatType = _historialChat.respuestaPreguntas
+                .Select(h => new HistorialChatType
+                {
+                    IdChat = _historialChat.Id,
+                    Pregunta = h.Pregunta,
+                    respuesta = h.Respuesta.respuesta,
+                    Asesor = h.Asesor,
+                    categoria = h.Respuesta.categoria,
+                    subcategoria = h.Respuesta.subcategoria,
+                }).ToList();
+
+            IHistorialChatRepositorio<Pa_Insert_HistorialChat, RespuestaGenericaBD> _Repository = new HistorialChatRepositorio<Pa_Insert_HistorialChat, RespuestaGenericaBD>();
+            Pa_Insert_HistorialChat pa = new Pa_Insert_HistorialChat
+            {
+                HistorialChat = JsonSerializer.Serialize(historialChatType),
+            };
+            _Repository.Parameters = pa;
+            var rese = _Repository.GuardarDatos().Result;       
+        }     
 
         ////TODO: Andres - nueva clase para cuando se finalice el chat enviar un mensaje preterminado y  luego genear finalizarchat
 
-        
+
 
     }
 }
