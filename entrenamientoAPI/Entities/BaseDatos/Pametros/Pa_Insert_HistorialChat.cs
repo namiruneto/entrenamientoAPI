@@ -1,11 +1,9 @@
-﻿using System.Data;
-
-namespace entrenamientoAPI.Entities.BaseDatos.Pametros
+﻿namespace entrenamientoAPI.Entities.BaseDatos.Pametros
 {
     /// <summary>
     /// Para consumir procedimiento almacenado 
     /// </summary>
-    public class Pa_Insert_HistorialChat 
+    public class Pa_Insert_HistorialChat
     {
         /// <summary>
         /// Se convierte en un json para ser guardado en la base de datos
