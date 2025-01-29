@@ -7,11 +7,10 @@ namespace entrenamientoAPI.Infrastructure.Repositorio
         where Parametre : class
         where Resul : class
     {
-        public Parametre Parameters { get; set; }
 
         public async Task<Resul> GuardarDatos()
         {
-            return await this.ExecuteStoredProcedureAsync("PA_Company_Insert");
+            return await this.ExecuteStoredProcedureAsync("PA_Insert_HistorialChat");
         }
     }
 }
